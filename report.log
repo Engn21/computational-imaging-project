@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2026.1.27)  26 MAY 2026 20:21
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2026.1.27)  28 MAY 2026 15:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -482,135 +482,102 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 
 
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
 
 [1{/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/l
 ocal/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc}
 
 
 ]
+Overfull \hbox (51.18398pt too wide) in paragraph at lines 76--93
+ [][] 
+ []
 
+
+
+
+
+[2]
 LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 1
-89.
-(/usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+97.
+ (/usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 
-[2]
-<outputs/focus_map.png, id=168, 462.528pt x 260.172pt>
+<outputs/focus_map.png, id=167, 462.528pt x 260.172pt>
 File: outputs/focus_map.png Graphic file (type png)
 <use outputs/focus_map.png>
-Package pdftex.def Info: outputs/focus_map.png  used on input line 232.
+Package pdftex.def Info: outputs/focus_map.png  used on input line 244.
 (pdftex.def)             Requested size: 123.84283pt x 69.65982pt.
-<outputs/fused_winner_takes_all.png, id=170, 642.4pt x 361.35pt>
+<outputs/fused_winner_takes_all.png, id=169, 642.4pt x 361.35pt>
 File: outputs/fused_winner_takes_all.png Graphic file (type png)
 <use outputs/fused_winner_takes_all.png>
 Package pdftex.def Info: outputs/fused_winner_takes_all.png  used on input line
- 237.
+ 249.
 (pdftex.def)             Requested size: 123.84283pt x 69.6607pt.
-<outputs/fused_soft.png, id=171, 642.4pt x 361.35pt>
+<outputs/fused_soft.png, id=170, 642.4pt x 361.35pt>
 File: outputs/fused_soft.png Graphic file (type png)
 <use outputs/fused_soft.png>
-Package pdftex.def Info: outputs/fused_soft.png  used on input line 242.
+Package pdftex.def Info: outputs/fused_soft.png  used on input line 254.
 (pdftex.def)             Requested size: 123.84283pt x 69.6607pt.
-<outputs/fused_pyramid.png, id=172, 642.4pt x 361.35pt>
+<outputs/fused_pyramid.png, id=171, 642.4pt x 361.35pt>
 File: outputs/fused_pyramid.png Graphic file (type png)
 <use outputs/fused_pyramid.png>
-Package pdftex.def Info: outputs/fused_pyramid.png  used on input line 247.
+Package pdftex.def Info: outputs/fused_pyramid.png  used on input line 259.
 (pdftex.def)             Requested size: 123.84283pt x 69.6607pt.
-
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-
-
-<outputs/flower_focus_map.png, id=176, 1040.688pt x 1387.584pt>
+<outputs/flower_focus_map.png, id=175, 1040.688pt x 1387.584pt>
 File: outputs/flower_focus_map.png Graphic file (type png)
 <use outputs/flower_focus_map.png>
-Package pdftex.def Info: outputs/flower_focus_map.png  used on input line 339.
+Package pdftex.def Info: outputs/flower_focus_map.png  used on input line 351.
 (pdftex.def)             Requested size: 123.84283pt x 165.10548pt.
-<outputs/flower_fused_wta.png, id=177, 1445.4pt x 1927.2pt>
+<outputs/flower_fused_wta.png, id=176, 1445.4pt x 1927.2pt>
 File: outputs/flower_fused_wta.png Graphic file (type png)
 <use outputs/flower_fused_wta.png>
-Package pdftex.def Info: outputs/flower_fused_wta.png  used on input line 344.
+Package pdftex.def Info: outputs/flower_fused_wta.png  used on input line 356.
 (pdftex.def)             Requested size: 123.84283pt x 165.11842pt.
-<outputs/flower_fused_soft.png, id=178, 1445.4pt x 1927.2pt>
+<outputs/flower_fused_soft.png, id=177, 1445.4pt x 1927.2pt>
 File: outputs/flower_fused_soft.png Graphic file (type png)
 <use outputs/flower_fused_soft.png>
-Package pdftex.def Info: outputs/flower_fused_soft.png  used on input line 349.
+Package pdftex.def Info: outputs/flower_fused_soft.png  used on input line 361.
 
 (pdftex.def)             Requested size: 123.84283pt x 165.11842pt.
-<outputs/flower_fused_pyramid.png, id=179, 1445.4pt x 1927.2pt>
+<outputs/flower_fused_pyramid.png, id=178, 1445.4pt x 1927.2pt>
 File: outputs/flower_fused_pyramid.png Graphic file (type png)
 <use outputs/flower_fused_pyramid.png>
 Package pdftex.def Info: outputs/flower_fused_pyramid.png  used on input line 3
-54.
+66.
 (pdftex.def)             Requested size: 123.84283pt x 165.11842pt.
-<outputs/insect_focus_map.png, id=181, 997.326pt x 1387.584pt>
-File: outputs/insect_focus_map.png Graphic file (type png)
-<use outputs/insect_focus_map.png>
-Package pdftex.def Info: outputs/insect_focus_map.png  used on input line 371.
-(pdftex.def)             Requested size: 123.84283pt x 172.28307pt.
-<outputs/insect_fused_wta.png, id=182, 1385.175pt x 1927.2pt>
-File: outputs/insect_fused_wta.png Graphic file (type png)
-<use outputs/insect_fused_wta.png>
-Package pdftex.def Info: outputs/insect_fused_wta.png  used on input line 376.
-(pdftex.def)             Requested size: 123.84283pt x 172.29366pt.
-<outputs/insect_fused_soft.png, id=183, 1385.175pt x 1927.2pt>
-File: outputs/insect_fused_soft.png Graphic file (type png)
-<use outputs/insect_fused_soft.png>
-Package pdftex.def Info: outputs/insect_fused_soft.png  used on input line 381.
-
-(pdftex.def)             Requested size: 123.84283pt x 172.29366pt.
-<outputs/insect_fused_pyramid.png, id=184, 1385.175pt x 1927.2pt>
-File: outputs/insect_fused_pyramid.png Graphic file (type png)
-<use outputs/insect_fused_pyramid.png>
-Package pdftex.def Info: outputs/insect_fused_pyramid.png  used on input line 3
-86.
-(pdftex.def)             Requested size: 123.84283pt x 172.29366pt.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-<outputs/lytro_03_fused_wta.png, id=188, 521.95pt x 521.95pt>
-File: outputs/lytro_03_fused_wta.png Graphic file (type png)
-<use outputs/lytro_03_fused_wta.png>
-Package pdftex.def Info: outputs/lytro_03_fused_wta.png  used on input line 441
-.
-(pdftex.def)             Requested size: 165.12378pt x 165.12393pt.
-<outputs/lytro_11_fused_wta.png, id=189, 521.95pt x 521.95pt>
-File: outputs/lytro_11_fused_wta.png Graphic file (type png)
-<use outputs/lytro_11_fused_wta.png>
-Package pdftex.def Info: outputs/lytro_11_fused_wta.png  used on input line 446
-.
-(pdftex.def)             Requested size: 165.12378pt x 165.12393pt.
-<outputs/lytro_13_fused_wta.png, id=190, 521.95pt x 521.95pt>
-File: outputs/lytro_13_fused_wta.png Graphic file (type png)
-<use outputs/lytro_13_fused_wta.png>
-Package pdftex.def Info: outputs/lytro_13_fused_wta.png  used on input line 451
-.
-(pdftex.def)             Requested size: 165.12378pt x 165.12393pt.
 
 
 [3]
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
-File: outputs/focus_map.png Graphic file (type png)
-<use outputs/focus_map.png>
-Package pdftex.def Info: outputs/focus_map.png  used on input line 489.
-(pdftex.def)             Requested size: 120.95892pt x 68.03613pt.
-<outputs/neural_focus_map.png, id=207, 462.528pt x 260.172pt>
-File: outputs/neural_focus_map.png Graphic file (type png)
-<use outputs/neural_focus_map.png>
-Package pdftex.def Info: outputs/neural_focus_map.png  used on input line 494.
-(pdftex.def)             Requested size: 120.95892pt x 68.03613pt.
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+<outputs/insect_focus_map.png, id=194, 997.326pt x 1387.584pt>
+File: outputs/insect_focus_map.png Graphic file (type png)
+<use outputs/insect_focus_map.png>
+Package pdftex.def Info: outputs/insect_focus_map.png  used on input line 383.
+(pdftex.def)             Requested size: 123.84283pt x 172.28307pt.
+<outputs/insect_fused_wta.png, id=195, 1385.175pt x 1927.2pt>
+File: outputs/insect_fused_wta.png Graphic file (type png)
+<use outputs/insect_fused_wta.png>
+Package pdftex.def Info: outputs/insect_fused_wta.png  used on input line 388.
+(pdftex.def)             Requested size: 123.84283pt x 172.29366pt.
+<outputs/insect_fused_soft.png, id=196, 1385.175pt x 1927.2pt>
+File: outputs/insect_fused_soft.png Graphic file (type png)
+<use outputs/insect_fused_soft.png>
+Package pdftex.def Info: outputs/insect_fused_soft.png  used on input line 393.
 
+(pdftex.def)             Requested size: 123.84283pt x 172.29366pt.
+<outputs/insect_fused_pyramid.png, id=197, 1385.175pt x 1927.2pt>
+File: outputs/insect_fused_pyramid.png Graphic file (type png)
+<use outputs/insect_fused_pyramid.png>
+Package pdftex.def Info: outputs/insect_fused_pyramid.png  used on input line 3
+98.
+(pdftex.def)             Requested size: 123.84283pt x 172.29366pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
@@ -618,10 +585,43 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 [4 <./outputs/focus_map.png> <./outputs/fused_winner_takes_all.png (PNG copy)> 
 <./outputs/fused_soft.png (PNG copy)> <./outputs/fused_pyramid.png (PNG copy)>]
+<outputs/lytro_03_fused_wta.png, id=212, 521.95pt x 521.95pt>
+File: outputs/lytro_03_fused_wta.png Graphic file (type png)
+<use outputs/lytro_03_fused_wta.png>
+Package pdftex.def Info: outputs/lytro_03_fused_wta.png  used on input line 453
+.
+(pdftex.def)             Requested size: 165.12378pt x 165.12393pt.
+<outputs/lytro_11_fused_wta.png, id=213, 521.95pt x 521.95pt>
+File: outputs/lytro_11_fused_wta.png Graphic file (type png)
+<use outputs/lytro_11_fused_wta.png>
+Package pdftex.def Info: outputs/lytro_11_fused_wta.png  used on input line 458
+.
+(pdftex.def)             Requested size: 165.12378pt x 165.12393pt.
+<outputs/lytro_13_fused_wta.png, id=214, 521.95pt x 521.95pt>
+File: outputs/lytro_13_fused_wta.png Graphic file (type png)
+<use outputs/lytro_13_fused_wta.png>
+Package pdftex.def Info: outputs/lytro_13_fused_wta.png  used on input line 463
+.
+(pdftex.def)             Requested size: 165.12378pt x 165.12393pt.
 
 
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+File: outputs/focus_map.png Graphic file (type png)
+<use outputs/focus_map.png>
+Package pdftex.def Info: outputs/focus_map.png  used on input line 501.
+(pdftex.def)             Requested size: 120.95892pt x 68.03613pt.
+<outputs/neural_focus_map.png, id=217, 462.528pt x 260.172pt>
+File: outputs/neural_focus_map.png Graphic file (type png)
+<use outputs/neural_focus_map.png>
+Package pdftex.def Info: outputs/neural_focus_map.png  used on input line 506.
+(pdftex.def)             Requested size: 120.95892pt x 68.03613pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
 
 
 
@@ -632,9 +632,8 @@ ng (PNG copy)> <./outputs/insect_focus_map.png> <./outputs/insect_fused_wta.png
 ed_pyramid.png (PNG copy)>]
 
 
-Underfull \hbox (badness 5050) in paragraph at lines 570--572
-[]\OT1/ptm/m/n/8 Z. Zhang and R. S. Blum, ``A cat-e-go-riza-tion of multiscale-
-
+Underfull \hbox (badness 3568) in paragraph at lines 540--541
+[]\OT1/ptm/m/n/10 A two-stage ORB-homography + ECC align-ment
  []
 
 
@@ -642,6 +641,11 @@ Underfull \hbox (badness 5050) in paragraph at lines 570--572
 [6 <./outputs/lytro_03_fused_wta.png (PNG copy)> <./outputs/lytro_11_fused_wta.
 png (PNG copy)> <./outputs/lytro_13_fused_wta.png (PNG copy)> <./outputs/neural
 _focus_map.png>]
+Underfull \hbox (badness 5050) in paragraph at lines 586--588
+[]\OT1/ptm/m/n/8 Z. Zhang and R. S. Blum, ``A cat-e-go-riza-tion of multiscale-
+
+ []
+
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -665,16 +669,16 @@ LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: F918903B2A4EAC6C8664C5620ED5257E;3230.
+(rerunfilecheck)             Checksum: DFB70A38DAEAA53CD62873BCD36FB31C;3207.
  ) 
 Here is how much of TeX's memory you used:
- 11551 strings out of 473190
- 182112 string characters out of 5715800
- 617795 words of memory out of 5000000
- 34573 multiletter control sequences out of 15000+600000
+ 11553 strings out of 473190
+ 182145 string characters out of 5715800
+ 614831 words of memory out of 5000000
+ 34574 multiletter control sequences out of 15000+600000
  600748 words of font info for 113 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,1140b,583s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,10n,79p,1222b,547s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></
@@ -693,10 +697,10 @@ exmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/
 fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/typ
 e1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/tim
 es/utmri8a.pfb>
-Output written on report.pdf (7 pages, 22447382 bytes).
+Output written on report.pdf (7 pages, 21361268 bytes).
 PDF statistics:
- 352 PDF objects out of 1000 (max. 8388607)
- 284 compressed objects within 3 object streams
- 84 named destinations out of 1000 (max. 500000)
+ 355 PDF objects out of 1000 (max. 8388607)
+ 287 compressed objects within 3 object streams
+ 85 named destinations out of 1000 (max. 500000)
  257 words of extra memory for PDF output out of 10000 (max. 10000000)
 

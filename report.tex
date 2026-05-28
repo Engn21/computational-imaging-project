@@ -32,7 +32,7 @@
 
 %------------------------------------------------------------
 \begin{abstract}
-Shallow depth of field in macro and close-up photography prevents any single image from rendering the entire subject in focus. Focal-stack fusion addresses this by combining a sequence of images that each focus on a different depth plane into one all-in-focus composite. This work implements and evaluates the complete focal-stack pipeline—image loading, ECC-based alignment, focus measure computation, focus map construction, and multi-scale fusion—on four datasets of increasing realism: a 23-frame plants baseline, a personal 6-frame flower macro stack, a 3-frame insect stack captured in the field, and pre-registered Lytro two-focus pairs. Four focus measures (Laplacian variance, Tenengrad energy, local contrast, and Sum-Modified Laplacian) are compared systematically, and three fusion strategies (winner-takes-all, soft/softmax blending, and Laplacian pyramid fusion) are evaluated using Tenengrad sharpness, SSIM, and Shannon entropy. Tenengrad consistently ranks first across all datasets; WTA fusion achieves the highest sharpness gain while pyramid blending best preserves structural similarity.
+Shallow depth of field in macro and close-up photography prevents any single image from rendering the entire subject in focus. Focal-stack fusion addresses this by combining a sequence of images that each focus on a different depth plane into one all-in-focus composite. This work implements and evaluates the complete focal-stack pipeline—image loading, two-stage ORB-homography and ECC alignment, focus measure computation, focus map construction, and multi-scale fusion—on six datasets of increasing realism: a 23-frame plants baseline, a personal 6-frame flower macro stack, a 6-frame personal handheld stack, a 4-frame evening stack, a 3-frame insect stack captured in the field, and pre-registered Lytro two-focus pairs. Four focus measures (Laplacian variance, Tenengrad energy, local contrast, and Sum-Modified Laplacian) are compared systematically, and three fusion strategies (winner-takes-all, soft/softmax blending, and Laplacian pyramid fusion) are evaluated using Tenengrad sharpness, SSIM, and Shannon entropy. Tenengrad consistently ranks first across all datasets; WTA fusion achieves the highest sharpness gain while pyramid blending best preserves structural similarity.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -50,7 +50,8 @@ This report makes the following contributions:
 \begin{itemize}
   \item A complete, end-to-end focal-stack pipeline implemented in Python (NumPy, OpenCV, SciPy) without any deep-learning framework for the core method.
   \item A systematic comparison of four focus measures on two independent datasets (plants and Lytro), demonstrating that the method ranking is consistent across domains.
-  \item Application of the pipeline to personal close-up stacks (flower and insect) captured with a smartphone.
+  \item A two-stage alignment strategy (ORB feature matching + homography, refined with ECC) that robustly handles focus breathing—the scale change induced by lens refocusing—which causes ghosting when translation-only ECC is used.
+  \item Application of the pipeline to four personal stacks (flower macro, handheld, evening, and insect) captured with a smartphone.
   \item An optional tiny learned focus-scorer (pure NumPy MLP) as an exploratory extension.
 \end{itemize}
 
@@ -84,6 +85,9 @@ Pyramid levels $L$    & 5           & Laplacian pyramid depth \\
 Max long edge         & 1920\,px    & Downsampling limit \\
 ECC max iterations    & 100         & Alignment convergence \\
 ECC threshold         & $10^{-5}$   & Alignment stopping criterion \\
+ORB keypoints         & 3000        & Feature detector capacity \\
+RANSAC threshold      & 3.0\,px     & Homography inlier distance \\
+Homography sanity     & $|\theta|<30^\circ$, $0.8<s<1.25$ & Reject degenerate warps \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -144,9 +148,11 @@ where $\tilde{S}_k = S_k - \max_j S_j$ (for numerical stability) and $\beta=8$. 
 \textbf{Laplacian pyramid blending.}
 For each frame $k$ and its corresponding softmax weight map $w_k$, Laplacian pyramids of the frame and Gaussian pyramids of the weight are computed to $L=5$ levels. The pyramids are blended level by level and collapsed to produce the fused output~\cite{burt1983multiresolution,zhang1999categorization}. This strategy preserves both sharpness and structural continuity.
 
-\subsection{ECC Alignment}
+\subsection{Alignment}
 
-For handheld stacks the camera moves slightly between exposures, producing misregistration that creates ghosting in the fused output. Enhanced Correlation Coefficient (ECC) optimization~\cite{evangelidis2008parametric} is used to estimate a translation warp for each frame relative to the first, using 100 iterations and a convergence threshold of $10^{-5}$.
+For handheld stacks the camera moves between exposures, producing misregistration that creates ghosting in the fused output. An initial implementation using translation-only ECC~\cite{evangelidis2008parametric} was found to be insufficient because smartphone lenses exhibit \emph{focus breathing}: the effective focal length changes slightly as the lens refocuses, introducing a per-frame scale factor of up to 9\% between the nearest and farthest focus positions. Translation-only ECC cannot recover scale and converges to incorrect local minima when the displacement is large.
+
+A two-stage alignment strategy was therefore adopted. In Stage~1, ORB keypoints~\cite{rublee2011orb} are detected in each frame and matched to the reference frame using a $k$-NN matcher with Lowe's ratio test ($r=0.75$). A homography is estimated from the inlier correspondences via RANSAC (reprojection threshold 3\,px). A sanity check rejects degenerate solutions where the implied rotation exceeds $30^\circ$ or the scale factor lies outside $[0.80,\,1.25]$; such cases fall back to a phase-correlation estimate initialised ECC translation. In Stage~2, ECC with 100 iterations and threshold $10^{-5}$ refines the sub-pixel residual translation on top of the Stage~1 warp. This pipeline eliminated the ghosting artefacts observed in the flower, insect, and evening stacks under translation-only alignment.
 
 \subsection{Quality Metrics}
 
@@ -174,8 +180,10 @@ Table~\ref{tab:datasets} summarises all datasets used in this study.
 Dataset   & Source        & Frames & Resolution      & Alignment \\
 \midrule
 Plants    & Public        & 23     & $360\times640$  & None (tripod) \\
-Flower    & iPhone ProRAW &  6     & $1920\times1440$& ECC \\
-Insect    & iPhone ProRAW &  3     & $1920\times1380$& ECC \\
+Flower    & iPhone ProRAW &  6     & $1920\times1440$& ORB + ECC \\
+My stack  & iPhone handheld & 6   & $1920\times1440$& ORB + ECC \\
+Evening   & iPhone ProRAW &  4     & $1440\times1920$& ORB + ECC \\
+Insect    & iPhone ProRAW &  3     & $1920\times1380$& ORB + ECC \\
 Lytro-03  & Nejati et al.~\cite{nejati2015multi} & 2 & $520\times520$ & None (pre-registered) \\
 Lytro-11  & Nejati et al.~\cite{nejati2015multi} & 2 & $520\times520$ & None (pre-registered) \\
 Lytro-13  & Nejati et al.~\cite{nejati2015multi} & 2 & $520\times520$ & None (pre-registered) \\
@@ -186,7 +194,11 @@ Lytro-13  & Nejati et al.~\cite{nejati2015multi} & 2 & $520\times520$ & None (pr
 
 \textbf{Plants (baseline).} A publicly available 23-frame focal stack of potted plants. No alignment is applied. This dataset serves as the primary benchmark for method selection.
 
-\textbf{Flower stack.} Six ProRAW frames ($f/1.78$, 6.765\,mm) of a flower captured with an iPhone 17 Pro Max on 23 May 2026. Images were converted from HEIC to JPEG via \texttt{sips} with EXIF-rotation correction ($-$90\,CW), then downsampled to 1920\,px on the long edge. ECC alignment is applied.
+\textbf{Flower stack.} Six ProRAW frames ($f/1.78$, 6.765\,mm) of a tulip arrangement captured with an iPhone 17 Pro Max on 23 May 2026. Images were converted from HEIC to JPEG via \texttt{sips} with EXIF-rotation correction ($-$90\,CW), then downsampled to 1920\,px on the long edge. ORB + ECC alignment is applied. Focus breathing across the six focal planes introduced a scale variation of up to 9\%, which was not recoverable by translation-only ECC; the homography-based Stage~1 alignment eliminates this artefact.
+
+\textbf{Personal handheld stack.} Six frames of an indoor scene captured hand-held with an iPhone 17 Pro Max. The stack tests the pipeline on a general scene with moderate depth variation. ORB + ECC alignment is applied.
+
+\textbf{Evening stack.} Four ProRAW frames from an evening indoor session (same camera). The scene is a table with objects at multiple depths, captured in artificial light. This stack validates generalisation across lighting conditions. ORB + ECC alignment is applied.
 
 \textbf{Insect stack.} Three frames of the same insect (IMG\_6887, IMG\_6888, IMG\_6889), captured hand-held. IMG\_6887 and IMG\_6889 carried EXIF ``Rotate 90 CW'' tags and required pixel-level rotation. IMG\_6888 had a different native width (2900\,px vs.\ 3024\,px), resolved by center-cropping all frames to the smallest common width before stacking. ECC alignment is applied.
 
@@ -525,7 +537,7 @@ This project demonstrates that a fully classical focal-stack pipeline—Tenengra
 \begin{enumerate}
   \item Tenengrad (Sobel gradient energy) is the most effective focus measure among the four tested, and its ranking relative to competitors is stable across two independent datasets (plants and Lytro).
   \item Winner-takes-all fusion maximises sharpness (up to $+$233\% over the best single frame for the flower stack) but degrades SSIM; Laplacian pyramid blending provides the best structural-similarity--sharpness trade-off.
-  \item ECC alignment successfully mitigates camera shake in handheld stacks but cannot compensate for subject motion; pyramid blending is more robust than WTA in the subject-motion case (insect: SSIM 0.680 vs.\ 0.649).
+  \item A two-stage ORB-homography + ECC alignment pipeline successfully mitigates both camera shake and focus breathing (lens scale change) in handheld stacks but cannot compensate for subject motion; pyramid blending is more robust than WTA in the subject-motion case (insect: SSIM 0.680 vs.\ 0.649).
   \item A tiny MLP trained on classical pseudo-labels reproduces the classical focus map with 81\% pixel accuracy, confirming the feasibility of a learned focus-scorer as a future extension.
 \end{enumerate}
 
@@ -561,6 +573,10 @@ M.~Nejati, S.~Samavi, and S.~Shirani, ``Multi-focus image fusion using dictionar
 \bibitem{evangelidis2008parametric}
 G.~D.~Evangelidis and E.~Z.~Psarakis, ``Parametric image alignment using enhanced correlation coefficient maximization,''
 \textit{IEEE Trans.\ Pattern Anal.\ Mach.\ Intell.}, vol.~30, no.~10, pp.~1858--1865, 2008.
+
+\bibitem{rublee2011orb}
+E.~Rublee, V.~Rabaud, K.~Konolige, and G.~Bradski, ``ORB: An efficient alternative to SIFT or SURF,''
+\textit{Proc.\ IEEE Int.\ Conf.\ Comput.\ Vis.\ (ICCV)}, pp.~2564--2571, 2011.
 
 \bibitem{subbarao1998optimal}
 M.~Subbarao and J.-K.~Tyan, ``Selecting the optimal focus measure for autofocusing and depth-from-focus,''
