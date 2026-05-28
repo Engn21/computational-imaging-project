@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.matplotlib_cache/
+example photos/
+outputs/flower_fused_wta_new.png
+outputs/flower_fused_wta_orb.png
+outputs/flower_fused_wta_hom.png
+outputs/flower_fused_pyramid_hom.png
+outputs/flower_fused_wta_sub.png
+outputs/flower_fused_pyramid_sub.png
