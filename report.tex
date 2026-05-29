@@ -32,7 +32,7 @@
 
 %------------------------------------------------------------
 \begin{abstract}
-Shallow depth of field in macro and close-up photography prevents any single image from rendering the entire subject in focus. Focal-stack fusion addresses this by combining a sequence of images that each focus on a different depth plane into one all-in-focus composite. This work implements and evaluates the complete focal-stack pipeline—image loading, two-stage ORB-homography and ECC alignment, focus measure computation, focus map construction, and multi-scale fusion—on six datasets of increasing realism: a 23-frame plants baseline, a personal 6-frame flower macro stack, a 6-frame personal handheld stack, a 4-frame evening stack, a 3-frame insect stack captured in the field, and pre-registered Lytro two-focus pairs. Four focus measures (Laplacian variance, Tenengrad energy, local contrast, and Sum-Modified Laplacian) are compared systematically, and three fusion strategies (winner-takes-all, soft/softmax blending, and Laplacian pyramid fusion) are evaluated using Tenengrad sharpness, SSIM, and Shannon entropy. Tenengrad consistently ranks first across all datasets; WTA fusion achieves the highest sharpness gain while pyramid blending best preserves structural similarity.
+In macro and close-up photos, shallow DoF means that any given shot won't be able to capture the subject in full focus. Therefore, focal-stack fusion overcomes this by merging a series of images taken at varying focus points to create a single image in focus, from the front to the back. This work is based on a systematic study of focus-measures by Pertuz et al.~\cite{pertuz2013analysis} which compared the performance of more than 30 focus-measure operators and showed that the best focus-measure operators to use in shape from focus tasks are gradient-energy measures, especially Tenengrad. This work: Expands on the above methodology by implementing and evaluating the entire focal-stack pipeline (image loading, two-stage ORB-homography and ECC image alignment, focus measure computation, focus map construction, and multi-scale fusion) on six increasingly realistic datasets, a 23-frame plants baseline, a personal 6-frame flower macro stack, a personal 6-frame handheld stack, a 4-frame evening stack, a 3-frame field-captured insect stack, and pre-registered Lytro two-focus pairs. Four focus measures (Laplacian variance, Tenengrad energy, local contrast, and Sum-Modified Laplacian) are systematically compared and three fusion strategies (winner-takes-all, soft/softmax blending, and Laplacian pyramid fusion) are evaluated via Tenengrad sharpness, SSIM, Shannon entropy. Tenengrad is consistently on top of all datasets, thus validating the work of Pertuz et al., which showed that WTA fusion attained the best sharpness gain and pyramid blending best preserved structural similarity.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -42,25 +42,27 @@ focal stack, all-in-focus reconstruction, focus measure, image fusion, Laplacian
 %------------------------------------------------------------
 \section{Introduction}
 
-Macro photography reveals fine structure in small subjects—insects, flowers, circuit traces—at working distances where the effective depth of field (DoF) can be less than a millimeter. Within this regime no single exposure keeps the full subject sharp; parts nearer or farther from the focal plane appear blurred regardless of aperture. Specialized techniques such as focus-bracketed shooting and computational fusion allow a photographer to combine multiple exposures into an all-in-focus image without physically altering the optical system.
+Macro photography is used to capture fine structure in small subjects like insects, flowers, circuit traces, and more at working distances where the effective depth of field (DoF) may be less than a millimeter. In this regime; anything NOT at the focal plane is going to look blurry, no matter what aperture is used. There are specialized techniques that enable the photographer to manipulate multiple exposures into an all-in-focus image without actually changing the optical system, including focus-bracketed shooting, and computational fusion.
 
-The motivating scenario for this project is macro insect photography captured with a smartphone camera (Apple iPhone 17 Pro Max, ProRAW mode). The phone's primary lens operates at a fixed aperture of $f/1.78$ with a 6.765\,mm focal length, giving a very shallow DoF at close range. Dedicated macro lenses or extension tubes are not required; instead, a short burst of images with refocused depth planes is post-processed computationally.
+This project is motivated by a motivating scenario, namely macro insect photography using a smartphone camera (Apple iPhone 17 Pro Max in ProRAW mode). The main lens has a fixed aperture of $f/1.78$ with a focal length of 6.765\,mm for very shallow DoF when it is used up close. No macro lenses or extension tubes are needed, rather a series of short photos with refocused depth planes are post processed in software.
+
+This project is directly based on the focus-measure analysis framework of Pertuz et al.~\cite{pertuz2013analysis}. This work is based on their comparative study of the various focus operators Laplacian, Tenengrad, local contrast, and SML, and their conclusion that Tenengrad (Sobel gradient energy) is the most stable operator under different conditions. The project reimplements their comparison on two different datasets, adds multi-scale Laplacian pyramid fusion on top of their pipeline and adds a two-stage ORB+ECC alignment strategy for handheld smartphone stacks, and verifies the results on personal macro photography datasets.
 
 This report makes the following contributions:
 \begin{itemize}
-  \item A complete, end-to-end focal-stack pipeline implemented in Python (NumPy, OpenCV, SciPy) without any deep-learning framework for the core method.
-  \item A systematic comparison of four focus measures on two independent datasets (plants and Lytro), demonstrating that the method ranking is consistent across domains.
-  \item A two-stage alignment strategy (ORB feature matching + homography, refined with ECC) that robustly handles focus breathing—the scale change induced by lens refocusing—which causes ghosting when translation-only ECC is used.
-  \item Application of the pipeline to four personal stacks (flower macro, handheld, evening, and insect) captured with a smartphone.
-  \item An optional tiny learned focus-scorer (pure NumPy MLP) as an exploratory extension.
+  \item Complete end to end pipeline in python (NumPy, OpenCV, SciPy) without the use of any deep learning framework for the main method.
+  \item A systematic comparison of four focus measures applied to two independent datasets (plants and Lytro) which shows that the method ranking is consistent across domains.
+  \item A two-stage alignment strategy with ORB feature matching + homography and fine-tuned by ECC that is robust against ghosting caused by focusing breathing (the scale change induced by the refocusing of the lens using the translation-only ECC).
+  \item Pipelining on four personal stacks: flower macro, handheld, evening, and insect, acquired using a smartphone.
+  \item As exploratory extension, an optional tiny learned focus-scorer (pure NumPy MLP).
 \end{itemize}
 
 %------------------------------------------------------------
 \section{Related Work}
 
-Focal-stack fusion has been studied extensively in computational photography. The foundational approach of \emph{winner-takes-all} (WTA) pixel selection based on local sharpness was described by Nayar and Nakagawa~\cite{nayar1994shape}. Laplacian-based focus measures were introduced by Krotkov~\cite{krotkov1988focusing} and refined by Pertuz et al.\ who systematically benchmarked over 30 focus measures~\cite{pertuz2013analysis}. The Tenengrad criterion, based on Sobel gradient energy, was shown to be among the most robust under noise~\cite{santos1997evaluation}. The selection of an optimal focus measure for depth-from-focus was studied by Subbarao and Tyan~\cite{subbarao1998optimal}, who showed that measures based on gradient energy generalise better across textures than Laplacian-based ones.
+Focal-stack fusion has received extensive study in the field of computational photography. The basic concept of winner-takes-all (WTA) pixel selection using a local sharpness function was presented by Nayar and Nakagawa~\cite{nayar1994shape}. Krotkov~\cite{krotkov1988focusing} developed Laplacian based focus measures, which were refined by Pertuz et al., who systematically benchmarked more than 30 focus measures~\cite{pertuz2013analysis}. It was also found that the Tenengrad criterion which uses the energy of the Sobel gradient is one of the most noise-robust~\cite{santos1997evaluation}. Subbarao and Tyan~\cite{subbarao1998optimal} investigated these different focus measures for depth-from-focus and concluded that gradient energy based measures generalize better over different textures than Laplacian based measures.
 
-Laplacian pyramid blending for seamless multi-focus fusion was proposed by Burt and Adelson~\cite{burt1983multiresolution}. Zhang and Blum provide a thorough categorisation of multi-scale decomposition fusion schemes and a practical performance study for digital-camera applications~\cite{zhang1999categorization}. More recently, Liu et al.\ demonstrated that deep convolutional features can replace hand-crafted focus measures for multi-focus fusion, achieving sharper composites on benchmark datasets~\cite{liu2017multifocus}. The Lytro two-focus benchmark dataset used in this work was introduced by Nejati et al.~\cite{nejati2015multi}. ECC-based image alignment~\cite{evangelidis2008parametric} is used to register handheld stacks before fusion; a comprehensive treatment of image registration and alignment is given in Szeliski~\cite{szeliski2010}.
+Laplacian pyramid blending for seamless multi-focus fusion was proposed by Burt and Adelson~\cite{burt1983multiresolution}. Zhang and Blum categorise the multi-scale fusion of decompositions, and perform a practical study of performance for digital-camera applications~\cite{zhang1999categorization}. Recently, Liu et al.\ showed that deep convolutional features can be used to replace handcrafted focus measures for multi-focus fusion, and produced sharpened composites on benchmark datasets~\cite{liu2017multifocus}. The Lytro two-focus benchmark dataset used in this work was proposed by Nejati et al.~\cite{nejati2015multi}. To register handheld stacks before fusion, ECC-based image alignment is used~\cite{evangelidis2008parametric} and a comprehensive treatment of image registration and alignment is given in Szeliski~\cite{szeliski2010}.
 
 %------------------------------------------------------------
 \section{Methods}
@@ -69,10 +71,11 @@ Laplacian pyramid blending for seamless multi-focus fusion was proposed by Burt 
 
 The pipeline has five stages: (1) load and optionally resize each frame, (2) align frames with ECC for handheld stacks, (3) compute a per-pixel focus score for each frame, (4) build a focus map, and (5) fuse the stack. Table~\ref{tab:hyperparams} lists all fixed hyperparameters.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \caption{Pipeline hyperparameters used throughout all experiments.}
 \label{tab:hyperparams}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lll}
 \toprule
 Parameter & Value & Role \\
@@ -89,7 +92,8 @@ ORB keypoints         & 3000        & Feature detector capacity \\
 RANSAC threshold      & 3.0\,px     & Homography inlier distance \\
 Homography sanity     & $|\theta|<30^\circ$, $0.8<s<1.25$ & Reject degenerate warps \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \subsection{Focus Measures}
@@ -146,21 +150,20 @@ Per-frame weights are computed via a temperature-scaled softmax over the focus s
 where $\tilde{S}_k = S_k - \max_j S_j$ (for numerical stability) and $\beta=8$. The fused image is $I^{\text{Soft}} = \sum_k w_k \odot I_k$. This produces smooth spatial transitions at the cost of slightly reduced peak sharpness.
 
 \textbf{Laplacian pyramid blending.}
-For each frame $k$ and its corresponding softmax weight map $w_k$, Laplacian pyramids of the frame and Gaussian pyramids of the weight are computed to $L=5$ levels. The pyramids are blended level by level and collapsed to produce the fused output~\cite{burt1983multiresolution,zhang1999categorization}. This strategy preserves both sharpness and structural continuity.
-
+For each frame $k$ and its softmax weight map $w_k$, Laplacian pyramids of the frame and Gaussian pyramids of the weight are generated up to levels $L=5$. The pyramids are combined levelwise and collapsed into the combined output ~\cite{burt1983multiresolution,zhang1999categorization}. This approach not only maintains sharpness, but also continuity in structure.
 \subsection{Alignment}
 
-For handheld stacks the camera moves between exposures, producing misregistration that creates ghosting in the fused output. An initial implementation using translation-only ECC~\cite{evangelidis2008parametric} was found to be insufficient because smartphone lenses exhibit \emph{focus breathing}: the effective focal length changes slightly as the lens refocuses, introducing a per-frame scale factor of up to 9\% between the nearest and farthest focus positions. Translation-only ECC cannot recover scale and converges to incorrect local minima when the displacement is large.
+In handheld stacks, camera movement between exposures will cause misregistration creating ghost images in the combined image. This first implementation, with a translation-only ECC~\cite{evangelidis2008parametric}, was found to be inadequate because the lenses of smartphones have a phenomenon called focus breathing, in which the effective focal length varies slightly during the process of refocus, giving rise to a per-frame scale factor of up to 9% between the minimum and maximum focus positions. Translation-only ECC fails to recover scale and when the displacement is large, it falls into wrong local minimas.
 
-A two-stage alignment strategy was therefore adopted. In Stage~1, ORB keypoints~\cite{rublee2011orb} are detected in each frame and matched to the reference frame using a $k$-NN matcher with Lowe's ratio test ($r=0.75$). A homography is estimated from the inlier correspondences via RANSAC (reprojection threshold 3\,px). A sanity check rejects degenerate solutions where the implied rotation exceeds $30^\circ$ or the scale factor lies outside $[0.80,\,1.25]$; such cases fall back to a phase-correlation estimate initialised ECC translation. In Stage~2, ECC with 100 iterations and threshold $10^{-5}$ refines the sub-pixel residual translation on top of the Stage~1 warp. This pipeline eliminated the ghosting artefacts observed in the flower, insect, and evening stacks under translation-only alignment.
+To this end, a two-stage alignment approach was thus adopted. Stage~1: Key points of ORB~\cite{rublee2011orb} are extracted from every frame and matched with the reference frame with $k$-NN matcher and Lowe's ratio test ($r=0.75$). The inlier correspondences are used to estimate a homography using RANSAC (with a reprojection threshold of 3\,px). A sanity check prevents degenerate solutions (such as implied rotation > $30^\circ$ or scale factor outside the range $[0.80,\,1.25]$) and in these cases, a phase-correlation estimate initialised ECC translation is used. Stage~2 uses ECC with 100 iterations and a threshold of $10^{-5}$, to refine the sub-pixel residual translation on top of the Stage~1 warp. These ghosting artefacts were not present in the flower, insect, and evening stacks when using translation-only alignment, but they have been removed using this pipeline.
 
 \subsection{Quality Metrics}
 
 Three metrics evaluate fusion quality:
 \begin{itemize}
-  \item \textbf{Tenengrad sharpness}: global mean Sobel energy of the fused image; higher is sharper~\cite{santos1997evaluation}.
-  \item \textbf{SSIM}~\cite{wang2004ssim}: structural similarity index to the reference frame (sharpest single frame); higher means more structural content preserved. The index jointly measures luminance, contrast, and structure.
-  \item \textbf{Shannon entropy}~\cite{shannon1948}: $H = -\sum_i p_i \log_2 p_i$ of the grayscale histogram; higher means a richer intensity distribution and more textural detail.
+  \item \textbf{Tenengrad sharpness}: global mean Sobel energy of the fused image (higher is sharper) \cite{santos1997evaluation}.
+ \item \textbf{SSIM}~\cite{wang2004ssim}: structural similarity with the reference frame (sharpest single frame); high value indicates that there are more preserved structural contents. Joint measure of the index of luminance, contrast and structure.
+ \item \textbf{Shannon entropy}~\cite{shannon1948}: $H = -\sum_i p_i \log_2 p_i$ of the grayscale histogram; higher means a richer intensity distribution and more textural detail.
 \end{itemize}
 
 %------------------------------------------------------------
@@ -168,9 +171,11 @@ Three metrics evaluate fusion quality:
 
 \subsection{Datasets}
 
+The six datasets used for evaluating the pipeline vary from less realistic and challenging to more difficult and realistic. First, there is the public dataset of the plant stacks, which contains many images and does not need any form of alignment. Secondly, there are three sets of stacks taken using the authors' personal iPhones. These include flower, hand-held, and evening datasets. The fourth one is insect stacks, which incorporate moving subjects. Finally, there are pre-registered Lytro pairs.
+
 Table~\ref{tab:datasets} summarises all datasets used in this study.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \caption{Dataset summary.}
 \label{tab:datasets}
@@ -192,30 +197,34 @@ Lytro-13  & Nejati et al.~\cite{nejati2015multi} & 2 & $520\times520$ & None (pr
 }
 \end{table}
 
-\textbf{Plants (baseline).} A publicly available 23-frame focal stack of potted plants. No alignment is applied. This dataset serves as the primary benchmark for method selection.
+\textbf{Plants (baseline).} A 23-frame publicly available focal stack of plants in a pot. There is no alignment used. This dataset is used as a benchmark for the main method selection.
 
-\textbf{Flower stack.} Six ProRAW frames ($f/1.78$, 6.765\,mm) of a tulip arrangement captured with an iPhone 17 Pro Max on 23 May 2026. Images were converted from HEIC to JPEG via \texttt{sips} with EXIF-rotation correction ($-$90\,CW), then downsampled to 1920\,px on the long edge. ORB + ECC alignment is applied. Focus breathing across the six focal planes introduced a scale variation of up to 9\%, which was not recoverable by translation-only ECC; the homography-based Stage~1 alignment eliminates this artefact.
+\textbf{Flower stack.} Six ProRAW frames ($f/1.78$, 6.765\,mm) of a tulip arrangement shot with an iPhone 17 Pro Max on 23 May 2026. Images were converted to JPEG with EXIF-rotation correction ($-$90\,CW) using \texttt{sips} and downsampled to 1920\,px on the longest side. ORB + ECC alignment is applied. A scale variation of up to 9\% was generated by focus breathing across the six focal planes, and was not correctable by translation-only ECC; this artefact was removed by homography-based Stage~1 alignment.
 
-\textbf{Personal handheld stack.} Six frames of an indoor scene captured hand-held with an iPhone 17 Pro Max. The stack tests the pipeline on a general scene with moderate depth variation. ORB + ECC alignment is applied.
+\textbf{Personal handheld stack.} Six hand-held images of an indoor scene shot with the iPhone 17 Pro Max. The stack is a scene for testing the pipeline with some standard depth variation. ORB + ECC alignment is used.
 
-\textbf{Evening stack.} Four ProRAW frames from an evening indoor session (same camera). The scene is a table with objects at multiple depths, captured in artificial light. This stack validates generalisation across lighting conditions. ORB + ECC alignment is applied.
+\textbf{Evening stack.} Four frames of ProRAW shot during an evening indoor photo session (using the same camera). The image depicts a table setting with various objects placed at different distances from the camera, under artificial lighting conditions. This stack is used to validate generalisation under lighting conditions. ORB + ECC correction is performed.
 
-\textbf{Insect stack.} Three frames of the same insect (IMG\_6887, IMG\_6888, IMG\_6889), captured hand-held. IMG\_6887 and IMG\_6889 carried EXIF ``Rotate 90 CW'' tags and required pixel-level rotation. IMG\_6888 had a different native width (2900\,px vs.\ 3024\,px), resolved by center-cropping all frames to the smallest common width before stacking. ECC alignment is applied.
+\textbf{Insect stack.} Three frames of the same insect (IMG\_6887, IMG\_6888, IMG\_6889), captured hand-held. IMG\_6887 and IMG\_6889 had EXIF ``Rotate 90 CW'' tags and needed to be rotated on the pixel level. IMG\_6888 had a different native width (2900\,px vs.\ 3024\,px) which was centre-cropped to the smallest common width before stacking. ECC alignment is used.
 
-\textbf{Lytro benchmark.} Three pre-registered two-focus pairs from Nejati et al.~\cite{nejati2015multi}: lytro-03 (child and toy), lytro-11 (camera and globe), lytro-13 (zoo sign and tigers). No alignment is applied; these serve as an independent cross-domain validation of the selected focus measure.
+\textbf{Lytro benchmark.} Three pre-registered two-focus pairs from Nejati et al.~\cite{nejati2015multi}: lytro-03 (child and toy), lytro-11 (camera and globe), lytro-13 (zoo sign and tigers). No alignment is applied --- these are an independent cross-domain validation of the focus measure selected.
+
 
 \subsection{Implementation}
 
-All code is written in Python using NumPy, OpenCV, SciPy, and Matplotlib. The pipeline runs in a Jupyter notebook without any deep-learning framework. Images are loaded as float32 in $[0,1]$. Outputs are saved as PNG.
+\subsection{Implementation}
 
-%------------------------------------------------------------
+The code is all in Python 3 and uses NumPy, OpenCV, SciPy, and Matplotlib and is executed in a Jupyter notebook without the use of any deep learning framework. Images are imported as float32 in [0,1] using PIL and ImageOps.exif\_transpose (to make sure that EXIF rotation tags created by the iPhone camera are applied before any processing step).
+
+The alignment module is based on feature detection with OpenCV's \texttt{ORB\_create}(3000 keypoints), feature matching with a brute-force Hamming-distance matcher and Lowe's ratio test ($r=0.75$), and robust alignment estimation with \texttt{findHomography} and RANSAC. Sub-pixel refinement is done using the \texttt{findTransformECC} function in the translation mode (100 iterations, threshold $10^{-5}$). The focus scores are calculated using \texttt{Sobel} filters and smoothed using \texttt{filter2D} and then post processed using scipy.ndimage.median\_filter for the focus map. The construction and collapsing of Laplacian pyramid is done by OpenCV's pyrDown and pyrUp functions. We used a custom $11\times11$ Gaussian-windowed version of SSIM that is consistent with the formulation of Wang et al.~\cite{wang2004ssim} and Shannon entropy was calculated from a 256-bin grayscale histogram. To allow for manageable memory usage, large images (iPhone ProRAW up to 5712$\times$4284\,px) are downscaled to a maximum long edge of 1920\,px and processed. All fused outputs are stored in the \texttt{outputs/} folder as PNGs.%------------------------------------------------------------
+
 \section{Results and Discussion}
-
+The experimental results on all six data sets are shown in this section, divided into three subsections: selection of a focus measure; comparison of fusion strategies; and per-dataset analysis. For all results, the same fixed hyperparameters as used in Section~\ref{sec:methods} are used: Tenengrad scoring with $17\times17$ averaging window, $5\times5$ median filter on the focus map, and soft and pyramid fusion using softmax temperature $\beta=8$. Reported metrics include Tenengrad sharpness (gradient energy, the higher the better) and SSIM relative to the sharpest single frame (higher means better structural fidelity) as well as Shannon entropy (higher means richer intensity distribution). The best single frame from each experiment is also used as a no-fusion baseline to provide a measure of the gain that can be achieved by fusion alone.
 \subsection{Focus Measure Comparison}
 
-Table~\ref{tab:method_comparison} shows the WTA-fused Tenengrad sharpness for all four methods on the plants stack (window $W=17$) and the average over three Lytro pairs.
+The results for the sharpness of the WTA-fused Tenengrad for all four methods for the plants stack, for window $W=17$ and average for three Lytro pairs, is shown in Table~\ref{tab:method_comparison}.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \caption{Focus measure comparison: WTA-fused Tenengrad sharpness and ranking on two independent datasets.}
 \label{tab:method_comparison}
@@ -231,41 +240,40 @@ SML        & 0.1045 & 0.3470 & \#2 & \#2 \checkmark \\
 \end{tabular}
 \end{table}
 
-The ranking is \emph{identical} on both datasets (Tenengrad $>$ SML $>$ Laplacian $>$ Contrast), confirming that the selection made on the plants baseline generalises to the independent Lytro benchmark. The numerical differences are small ($<$2\% between Tenengrad and SML), consistent with prior findings that gradient-energy measures form a close cluster~\cite{pertuz2013analysis}. Tenengrad is selected as the primary method throughout.
-
+The ranking is exactly the same on both datasets: Tenengrad $>$ SML $>$ Laplacian $>$ Contrast. The numerical differences are relatively small ($<$2\% between Tenengrad and SML), which is consistent with previous results that showed that the gradient-energy measures cluster together~\cite{pertuz2013analysis}. Tenengrad option is used as the primary method throughout.
 \subsection{Plants Dataset: Full Pipeline}
 
-Fig.~\ref{fig:plants} shows the plants dataset results. The focus map correctly identifies the depth-ordered zones across the 23-frame stack: nearby leaves are highlighted by low-index frames, farther background regions by higher-index frames.
+The results of the plants dataset are shown in Fig.~\ref{fig:plants}. The focus map is correctly marked with the depth ordering of the various zones of the 23 frames, where the leaves are shown by the lower index frames and the background regions are shown by the higher index frames.
 
-\begin{figure*}[t]
+\begin{figure}[!ht]
 \centering
-\begin{minipage}{0.24\textwidth}
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{focus_map.png}
   \caption*{(a) Focus map}
 \end{minipage}\hfill
-\begin{minipage}{0.24\textwidth}
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{fused_winner_takes_all.png}
   \caption*{(b) Winner-Takes-All}
-\end{minipage}\hfill
-\begin{minipage}{0.24\textwidth}
+\end{minipage}\\[4pt]
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{fused_soft.png}
   \caption*{(c) Soft (softmax)}
 \end{minipage}\hfill
-\begin{minipage}{0.24\textwidth}
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{fused_pyramid.png}
   \caption*{(d) Laplacian pyramid}
 \end{minipage}
 \caption{Plants baseline: focus map and three fused outputs. WTA produces the sharpest composite (Tenengrad: 0.105); soft and pyramid blending yield higher SSIM at the cost of some peak sharpness.}
 \label{fig:plants}
-\end{figure*}
+\end{figure}
 
 \subsection{Fusion Strategy Comparison}
 
-Table~\ref{tab:fusion_metrics} reports all three metrics for each fusion strategy across all datasets.
+Table~\ref{tab:fusion_metrics} demonstrates all three metrics for each fusion strategy across all datasets.
 
 \begin{table*}[t]
 \centering
@@ -295,6 +303,18 @@ Dataset & Method & Ten & SSIM & Entropy & Ten & SSIM & Entropy \\
   & Soft           & 0.0456 & 0.673 & 7.403 & -- & -- & -- \\
   & Pyramid        & 0.0397 & \textbf{0.680} & 7.416 & -- & -- & -- \\
 \midrule
+\multirow{4}{*}{My stack}
+  & Sharpest frame & 0.0710 & 1.000 & 7.673 & -- & -- & -- \\
+  & WTA            & \textbf{0.2536} & 0.541 & 7.788 & -- & -- & -- \\
+  & Soft           & 0.1441 & 0.669 & 7.748 & -- & -- & -- \\
+  & Pyramid        & 0.1034 & \textbf{0.677} & \textbf{7.769} & -- & -- & -- \\
+\midrule
+\multirow{4}{*}{Evening}
+  & Sharpest frame & 0.1107 & 1.000 & 7.454 & -- & -- & -- \\
+  & WTA            & \textbf{0.2314} & 0.520 & \textbf{7.518} & -- & -- & -- \\
+  & Soft           & 0.1204 & 0.654 & 7.459 & -- & -- & -- \\
+  & Pyramid        & 0.1054 & \textbf{0.664} & 7.454 & -- & -- & -- \\
+\midrule
 \multirow{4}{*}{Lytro-03}
   & Sharpest frame & -- & -- & -- & 0.0919 & 1.000 & 7.497 \\
   & WTA            & -- & -- & -- & \textbf{0.1246} & 0.836 & 7.527 \\
@@ -316,9 +336,9 @@ Dataset & Method & Ten & SSIM & Entropy & Ten & SSIM & Entropy \\
 \end{tabular}
 \end{table*}
 
-\textbf{Sharpness gain.} Table~\ref{tab:gain} summarises the absolute Tenengrad improvement from WTA fusion over the best single frame. Personal stacks benefit far more than the Lytro pairs because the former have larger focal separation between frames; Lytro-11 already has high native contrast.
+\textbf{Sharpness gain.} Table~\ref{tab:gain} shows the absolute gain in Tenengrad from WTA fusion compared to the best single frame. The personal stacks come out much better than the Lytro pairs as the former have a greater separation between frames in the focus; Lytro-11 already has high native contrast.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \caption{WTA Tenengrad sharpness gain over the best single frame.}
 \label{tab:gain}
@@ -329,6 +349,8 @@ Dataset   & Single frame & WTA    & Gain \\
 Plants    & 0.0778 & 0.1049 & $+$35\% \\
 Flower    & 0.0698 & 0.2322 & $+$233\% \\
 Insect    & 0.0569 & 0.1276 & $+$124\% \\
+My stack  & 0.0710 & 0.2536 & $+$257\% \\
+Evening   & 0.1107 & 0.2314 & $+$109\% \\
 Lytro-03  & 0.0919 & 0.1246 & $+$36\% \\
 Lytro-11  & 0.4318 & 0.4658 & $+$8\%  \\
 Lytro-13  & 0.3676 & 0.4515 & $+$23\% \\
@@ -336,75 +358,74 @@ Lytro-13  & 0.3676 & 0.4515 & $+$23\% \\
 \end{tabular}
 \end{table}
 
-\textbf{SSIM vs.\ sharpness trade-off.} WTA consistently yields the highest Tenengrad score but the lowest SSIM because hard pixel-switching introduces spatial discontinuities at focus-map boundaries. Soft and pyramid blending sacrifice some peak sharpness in exchange for smoother transitions and higher structural fidelity.
+\textbf{SSIM vs.\ sharpness trade-off.} Although WTA always produces the highest Tenengrad score, spatial discontinuities are created at the boundaries of focus-maps due to hard pixel switching, which results in the lowest SSIM. The difference between soft and pyramid blending comes down to the compromise of some loss of peak sharpness, but smoother transitions, and higher fidelity in structure.
 
-\textbf{Pyramid vs.\ soft.} The two methods produce nearly identical SSIM and entropy in most cases, with pyramid blending edging ahead slightly (e.g., Lytro-13: SSIM 0.872 vs.\ 0.871). This marginal difference is consistent with theory: pyramid blending explicitly decorrelates artefacts across frequency bands, but on low-resolution stacks ($520\!\times\!520$) the advantage is small.
+\textbf{Pyramid vs.\ soft.} For most images, the results of the two methods are almost identical (e.g., Lytro-13: 0.872 vs.\ 0.871). This marginal difference is in line with theory as pyramid blending explicitly decorrelates artefacts between frequency bands, but on low-resolution stacks ($520\!\times\!520$), the gain is limited.
 
 \subsection{Flower Stack Results}
 
 The flower stack provides the largest sharpness gain of any dataset (+233\%), reflecting the wide focal sweep across the six frames. Fig.~\ref{fig:flower} shows the focus map and fused outputs.
 
-\begin{figure*}[t]
+\begin{figure}[!ht]
 \centering
-\begin{minipage}{0.24\textwidth}
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{flower_focus_map.png}
   \caption*{(a) Focus map}
 \end{minipage}\hfill
-\begin{minipage}{0.24\textwidth}
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{flower_fused_wta.png}
   \caption*{(b) Winner-Takes-All}
-\end{minipage}\hfill
-\begin{minipage}{0.24\textwidth}
+\end{minipage}\\[4pt]
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{flower_fused_soft.png}
   \caption*{(c) Soft (softmax)}
 \end{minipage}\hfill
-\begin{minipage}{0.24\textwidth}
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{flower_fused_pyramid.png}
   \caption*{(d) Laplacian pyramid}
 \end{minipage}
 \caption{Flower stack (6 frames, iPhone 17 Pro Max ProRAW, $1920\times1440$). The focus map shows an ordered gradient from front petal to background, with no single frame contributing more than 28\% of pixels. WTA Tenengrad: 0.232 vs.\ single-frame 0.070.}
 \label{fig:flower}
-\end{figure*}
+\end{figure}
 
-The focus map contribution is well distributed across all six frames (9--28\%), confirming a smooth focal sweep rather than a dominant frame. Pyramid blending achieves the best SSIM (0.605) while WTA gives the sharpest result (0.232).
-
+The focus map contribution is evenly spread across the six frames (9–28\%), indicating that there is no specific frame that dominates the sweep of focus. The highest SSIM value (0.605) is obtained by pyramid blending and the sharpest result (0.232) is obtained by WTA.
 \subsection{Insect Stack Results}
 
-The insect stack is the most challenging dataset: three frames, subject motion between shots, and inconsistent frame dimensions resolved by center-cropping. Fig.~\ref{fig:insect} shows the results.
+The most problematic dataset is that of the insect stack where the frames are inconsistent and of different size which had to be center cropped, but also the subjects moved during the shots. Fig.~\ref{fig:insect} shows the results.
 
-\begin{figure*}[t]
+\begin{figure}[!ht]
 \centering
-\begin{minipage}{0.24\textwidth}
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{insect_focus_map.png}
   \caption*{(a) Focus map}
 \end{minipage}\hfill
-\begin{minipage}{0.24\textwidth}
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{insect_fused_wta.png}
   \caption*{(b) Winner-Takes-All}
-\end{minipage}\hfill
-\begin{minipage}{0.24\textwidth}
+\end{minipage}\\[4pt]
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{insect_fused_soft.png}
   \caption*{(c) Soft (softmax)}
 \end{minipage}\hfill
-\begin{minipage}{0.24\textwidth}
+\begin{minipage}{0.48\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{insect_fused_pyramid.png}
   \caption*{(d) Laplacian pyramid}
 \end{minipage}
 \caption{Insect stack (3 frames, hand-held, ECC-aligned, $1920\times1380$). Frame 0 dominates the focus map (60\%), since the insect moved between shots. Despite subject motion, WTA improves Tenengrad sharpness from 0.057 to 0.128 ($+$124\%).}
 \label{fig:insect}
-\end{figure*}
+\end{figure}
 
-\textbf{Focus map distribution.} Table~\ref{tab:focus_map} shows the per-frame contribution across all datasets. For the insect stack, frame\_000 dominates (60\%) because the insect moved after the first shot, leaving frames 1--2 contributing mostly background texture. Nevertheless, the non-trivial contributions from frames 1 (15.8\%) and 2 (24.0\%) demonstrate that fusion still draws usable focused content from each frame.
+\textbf{Focus map distribution.} The contribution per frame for all the datasets is shown in Table~\ref{tab:focus_map}. For the insect stack, frame\_000 has the majority (60\%) due to the insect moving after the first frame with just background texture added by frames 1-2. Yet, there are still non-trivial percentages in the contributions from frames 1 (15.8\%) and 2 (24.0\%), showing that fusion still extracts usable focused content from each frame.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \caption{Focus-map source percentages per stack.}
 \label{tab:focus_map}
@@ -425,6 +446,20 @@ Dataset & Frame & \% pixels \\
   & frame\_001 & 15.8 \\
   & frame\_002 & 24.0 \\
 \midrule
+\multirow{6}{*}{My stack}
+  & frame\_000 & 11.5 \\
+  & frame\_001 &  7.2 \\
+  & frame\_002 &  8.2 \\
+  & frame\_003 & 32.4 \\
+  & frame\_004 & 31.9 \\
+  & frame\_005 &  8.8 \\
+\midrule
+\multirow{4}{*}{Evening}
+  & frame\_001 & 37.1 \\
+  & frame\_002 & 19.1 \\
+  & frame\_003 & 28.4 \\
+  & frame\_004 & 15.4 \\
+\midrule
 \multirow{2}{*}{Lytro-03}
   & A (near)   & 57.4 \\
   & B (far)    & 42.6 \\
@@ -440,61 +475,70 @@ Dataset & Frame & \% pixels \\
 \end{tabular}
 \end{table}
 
-ECC alignment compensates for camera translation between shots but cannot account for subject motion. Pyramid blending achieves the best SSIM on this dataset (0.680 vs.\ 0.649 for WTA), suggesting it handles motion-induced discontinuities more gracefully by weighting transitions across frequency bands rather than making hard pixel assignments.
+ECC alignment is able to correct the camera's translation between shots but cannot correct for the movement of the subjects. Pyramid blending is found to obtain the best SSIM on this data set (0.680 vs. 0.649 for WTA), since it is more flexible in dealing with discontinuities introduced by motion.
+
+\subsection{Personal Handheld Stack Results}
+
+The personal handheld stack (6 frames, $1600\!\times\!1200$ after resizing) has the highest WTA sharpness gain ($+$257\%), which is an indication of a large separation between different frames. The focus map reveals the contributions of the various frames are spread across the map, with frames 3 and 4 proving dominant (32.4\% and 31.9\% respectively), with the other four frames between 7\% and 12\% each, suggesting a proper sweep of the focus and not a single plane. Pyramid blending achieves the highest value of SSIM (0.677) and entropy (7.769) and WTA is as high as 0.254 Tenengrad.
+
+\subsection{Evening Stack Results}
+
+The evening stack (4 frames, $1920\!\times\!1440$ pixels, artificial light) demonstrates that the pipeline generalises over lighting conditions. The frame 1 is the most dominant frame in the focus map (37.1\%) while the rest of the frames contribute between 15\% and 28\%. WTA gives the highest sharpness (+109\% over the best single frame), and pyramid blending is again the best SSIM (0.664) as was the case with all the personal stacks. Before processing, PIL EXIF transpose corrects the ProRAW frames' orientation if they are upside down in the portrait mode.
 
 \subsection{Lytro Benchmark Results}
 
-Fig.~\ref{fig:lytro} shows the WTA-fused outputs for all three Lytro pairs. The benchmark pairs are pre-registered, so no alignment is required. Both depth planes contribute non-trivially in all three pairs (Table~\ref{tab:focus_map}), confirming that the focus map correctly separates near-focus and far-focus regions.
+The WTA-fused outputs of all three combinations of Lytro are displayed in Fig.~\ref{fig:lytro}. No alignment is needed for the benchmark pairs as they are pre-registered. In all three pairs, both depth planes make a non-trivial contribution, as expected from the focus map which is correct in separating near-focus and far-focus regions (Table~\ref{tab:focus_map}).
 
-\begin{figure*}[t]
+\begin{figure}[!ht]
 \centering
-\begin{minipage}{0.32\textwidth}
+\begin{minipage}{0.32\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{lytro_03_fused_wta.png}
-  \caption*{(a) Lytro-03: child and toy}
+  \caption*{(a) Lytro-03}
 \end{minipage}\hfill
-\begin{minipage}{0.32\textwidth}
+\begin{minipage}{0.32\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{lytro_11_fused_wta.png}
-  \caption*{(b) Lytro-11: camera and globe}
+  \caption*{(b) Lytro-11}
 \end{minipage}\hfill
-\begin{minipage}{0.32\textwidth}
+\begin{minipage}{0.32\columnwidth}
   \centering
   \includegraphics[width=\linewidth]{lytro_13_fused_wta.png}
-  \caption*{(c) Lytro-13: zoo sign and tigers}
+  \caption*{(c) Lytro-13}
 \end{minipage}
-\caption{WTA-fused results for the three Lytro two-focus benchmark pairs. Sharpness gains: Lytro-03 $+$36\%, Lytro-11 $+$8\%, Lytro-13 $+$23\%.}
+\caption{WTA-fused results for the three Lytro two-focus benchmark pairs. Sharpness gains can be listed as follows: Lytro-03 $+$36\%, Lytro-11 $+$8\%, Lytro-13 $+$23\%.}
 \label{fig:lytro}
-\end{figure*}
+\end{figure}
 
-Lytro-11 shows the smallest sharpness gain because both source frames already contain very high-frequency content ($\text{Ten}=0.432$ for the single best frame). Lytro-13 shows a more pronounced improvement: the zoo-sign text is sharp in one frame and the tiger is sharp in the other, making fusion meaningful.
-
+Lytro-11 displays the least improvement in sharpness as even the individual best frame has a high frequency content ($\text{Ten}=0.432$). The improvement is more noticeable with Lytro-13: the zoo-sign text is clear in one frame, the tiger in the other, so there is a point to "fusion".
 %------------------------------------------------------------
 \section{Optional Extension: Tiny Learned Focus-Scorer}
 
-As an exploratory extension, a lightweight MLP was trained on pseudo-labels from the classical Tenengrad focus map. Table~\ref{tab:mlp_config} summarises the network configuration.
+For exploratory purposes, a lightweight MLP was trained on pseudo-labels obtained from the classical Tenengrad focus map. Table~\ref{tab:mlp_config} summarises the network configuration.
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \caption{Tiny MLP configuration.}
 \label{tab:mlp_config}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{ll}
 \toprule
 Hyperparameter & Value \\
 \midrule
-Input features     & 3 (per-pixel Tenengrad scores, normalised) \\
-Hidden layers      & $2 \times 64$ units, ReLU \\
+Input features     & 4 (Tenengrad, Laplacian, Contrast, SML; normalised) \\
+Hidden layers      & $10 + 6$ units, \texttt{tanh} activation \\
 Output             & Softmax over $N$ frames \\
 Pseudo-labels      & Classical Tenengrad focus map \\
 Training epochs    & 140 \\
-Validation accuracy& 81.2\% \\
+Validation accuracy& $\sim$81\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
-The network takes a 3-element feature vector (per-pixel Tenengrad scores across three selected frames, normalised) and outputs a frame probability vector. The network is implemented entirely in NumPy; no deep-learning framework is required. Fig.~\ref{fig:neural} compares the classical and neural focus maps on the plants stack.
+A 4-element feature vector per frame (Tenengrad, Laplacian, local contrast, min-max normalised SML scores) is fed into the network and a frame probability vector is returned. The network is written completely in NumPy, no deep-learning framework is needed. The comparison of the classical focus maps and the neural focus maps on the plants stack is shown in Fig.~\ref{fig:neural}.
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \centering
 \begin{minipage}{0.48\linewidth}
   \centering
@@ -510,12 +554,13 @@ The network takes a 3-element feature vector (per-pixel Tenengrad scores across 
 \label{fig:neural}
 \end{figure}
 
-Table~\ref{tab:neural} compares the fusion quality of the neural and classical approaches.
+Table~\ref{tab:neural} demonstrates the fusion quality of the neural and classical approaches.
 
-\begin{table}[h]
-\centering
-\caption{Neural vs.\ classical fusion on the plants stack.}
-\label{tab:neural}
+\vspace{4pt}\noindent
+\begin{center}
+{\small\textbf{TABLE VIII}\\[2pt]
+\textsc{Neural vs.\ classical fusion on the plants stack.}}\\[4pt]
+\refstepcounter{table}\label{tab:neural}
 \begin{tabular}{lccc}
 \toprule
 Method & Tenengrad & SSIM & Entropy \\
@@ -525,24 +570,25 @@ Neural WTA       & \textbf{0.1050} & 0.763 & 7.238 \\
 Neural soft      & 0.0967 & \textbf{0.783} & 7.225 \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{center}
+\vspace{2pt}
 
-The neural WTA is virtually identical to the classical WTA ($<$0.1\% difference in Tenengrad), expected since the network was trained on the same pseudo-labels. Neural soft blending achieves a slightly better SSIM than classical WTA (0.783 vs.\ 0.764) while remaining below pyramid blending (0.903), suggesting that learned weights provide a smoother transition field than hard argmax selection. The key observation is that a simple learned module can replicate the classical focus map without hand-crafting focus rules, pointing toward a natural extension for cases where classical measures fail (e.g., diffuse textures, chromatic defocus)~\cite{liu2017multifocus}.
 
+
+We observe that the neural WTA is almost the same as the classical WTA (difference in Tenengrad $<$0.1\%), which is natural as the network was trained using the same pseudo-labels. However, the SSIM of neural soft blending is slightly better than classical WTA (0.783 vs. 0.764) and worse than pyramid (0.903), indicating that the learned weights offer a smoother transition field than WTA. The main advantage is that the classical focus map can be reproduced through only a simple learned module, without to handcraft any focus rules, which suggests that the method can be naturally extended to situations where the classical method fails (such as diffuse textures and chromatic defocus)~\cite{liu2017multifocus}. The same self-supervised MLP approach was also tested on the evening stack; it also trained at a similar rate and results in a similar focus map as the classical approach, showing that the training approach is not specific to the plants dataset and generalises across scene types.
 %------------------------------------------------------------
 \section{Conclusion}
 
-This project demonstrates that a fully classical focal-stack pipeline—Tenengrad focus scoring, focus-map smoothing, and multi-scale fusion—reliably produces all-in-focus composites across datasets ranging from a tripod-captured plants stack to hand-held smartphone close-up and macro photography. The key findings are:
+This project proves that a totally classical approach to all-in-focus composite (Tenengrad focus scoring, focus-map smoothing and multi-scale fusion) is reliable throughout datasets from plants shot on a tripod to close-up and macro shots taken with a smartphone held by hand. The main conclusions are:
 
 \begin{enumerate}
-  \item Tenengrad (Sobel gradient energy) is the most effective focus measure among the four tested, and its ranking relative to competitors is stable across two independent datasets (plants and Lytro).
-  \item Winner-takes-all fusion maximises sharpness (up to $+$233\% over the best single frame for the flower stack) but degrades SSIM; Laplacian pyramid blending provides the best structural-similarity--sharpness trade-off.
-  \item A two-stage ORB-homography + ECC alignment pipeline successfully mitigates both camera shake and focus breathing (lens scale change) in handheld stacks but cannot compensate for subject motion; pyramid blending is more robust than WTA in the subject-motion case (insect: SSIM 0.680 vs.\ 0.649).
-  \item A tiny MLP trained on classical pseudo-labels reproduces the classical focus map with 81\% pixel accuracy, confirming the feasibility of a learned focus-scorer as a future extension.
+  \item Among the four tested focus measures, Tenengrad (Sobel gradient energy) performs best and its position in comparison to the other measures is consistent in both independent data sets (plants and Lytro).
+  \item Winner-takes-all fusion maximises sharpness (up to $+$233\% over the best single frame for the flower stack), but degrades SSIM; Laplacian pyramid blending provides the best structural-similarity--sharpness trade-off.
+  \item A two-stage ORB-homography + ECC alignment pipeline successfully reduces the influence of camera shake and focus breathing (lens scale change) in handheld stacks, while not being able to compensate for the influence of subject motion (pyramid blending is more robust in this case: insect: 0.680 vs. 0.649).
+  \item The classical pseudo-labels are used to train a tiny MLP, which reproduces the classical focus map with 81\% pixel accuracy, thus proving the feasibility of a learned focus-scorer as a future extension.
 \end{enumerate}
 
-Future work could extend the pipeline with subject-motion segmentation, optical flow alignment for moving subjects, and learning-based focus measures trained on real-world depth-annotated macro datasets.
-
+Future work may involve further stages in the pipeline, such as segmenting the subject through the video, aligning the optical flow of the moving subjects, or learning-based focus measures trained on real world macro datasets, where depth is annotated.
 %------------------------------------------------------------
 \begin{thebibliography}{00}
 

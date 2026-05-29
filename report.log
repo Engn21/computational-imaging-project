@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2026.1.27)  28 MAY 2026 15:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2026.1.27)  29 MAY 2026 21:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -482,166 +482,163 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 
 
+Underfull \hbox (badness 1983) in paragraph at lines 53--54
+[]\OT1/ptm/m/n/10 Complete end to end pipeline in python (NumPy,
+ []
+
+
 
 [1{/usr/local/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/usr/l
 ocal/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc}
 
 
 ]
-Overfull \hbox (51.18398pt too wide) in paragraph at lines 76--93
- [][] 
- []
-
-
 
 
 
 [2]
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 1
-97.
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 2
+02.
  (/usr/local/texlive/2025/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 
-<outputs/focus_map.png, id=167, 462.528pt x 260.172pt>
-File: outputs/focus_map.png Graphic file (type png)
-<use outputs/focus_map.png>
-Package pdftex.def Info: outputs/focus_map.png  used on input line 244.
-(pdftex.def)             Requested size: 123.84283pt x 69.65982pt.
-<outputs/fused_winner_takes_all.png, id=169, 642.4pt x 361.35pt>
-File: outputs/fused_winner_takes_all.png Graphic file (type png)
-<use outputs/fused_winner_takes_all.png>
-Package pdftex.def Info: outputs/fused_winner_takes_all.png  used on input line
- 249.
-(pdftex.def)             Requested size: 123.84283pt x 69.6607pt.
-<outputs/fused_soft.png, id=170, 642.4pt x 361.35pt>
-File: outputs/fused_soft.png Graphic file (type png)
-<use outputs/fused_soft.png>
-Package pdftex.def Info: outputs/fused_soft.png  used on input line 254.
-(pdftex.def)             Requested size: 123.84283pt x 69.6607pt.
-<outputs/fused_pyramid.png, id=171, 642.4pt x 361.35pt>
-File: outputs/fused_pyramid.png Graphic file (type png)
-<use outputs/fused_pyramid.png>
-Package pdftex.def Info: outputs/fused_pyramid.png  used on input line 259.
-(pdftex.def)             Requested size: 123.84283pt x 69.6607pt.
 
-LaTeX Warning: `h' float specifier changed to `ht'.
+Underfull \hbox (badness 1394) in paragraph at lines 219--220
+\OT1/ptm/m/n/10 ment is done us-ing the \OT1/pcr/m/n/10 findTransformECC \OT1/p
+tm/m/n/10 func-tion
+ []
 
-<outputs/flower_focus_map.png, id=175, 1040.688pt x 1387.584pt>
-File: outputs/flower_focus_map.png Graphic file (type png)
-<use outputs/flower_focus_map.png>
-Package pdftex.def Info: outputs/flower_focus_map.png  used on input line 351.
-(pdftex.def)             Requested size: 123.84283pt x 165.10548pt.
-<outputs/flower_fused_wta.png, id=176, 1445.4pt x 1927.2pt>
-File: outputs/flower_fused_wta.png Graphic file (type png)
-<use outputs/flower_fused_wta.png>
-Package pdftex.def Info: outputs/flower_fused_wta.png  used on input line 356.
-(pdftex.def)             Requested size: 123.84283pt x 165.11842pt.
-<outputs/flower_fused_soft.png, id=177, 1445.4pt x 1927.2pt>
-File: outputs/flower_fused_soft.png Graphic file (type png)
-<use outputs/flower_fused_soft.png>
-Package pdftex.def Info: outputs/flower_fused_soft.png  used on input line 361.
 
-(pdftex.def)             Requested size: 123.84283pt x 165.11842pt.
-<outputs/flower_fused_pyramid.png, id=178, 1445.4pt x 1927.2pt>
-File: outputs/flower_fused_pyramid.png Graphic file (type png)
-<use outputs/flower_fused_pyramid.png>
-Package pdftex.def Info: outputs/flower_fused_pyramid.png  used on input line 3
-66.
-(pdftex.def)             Requested size: 123.84283pt x 165.11842pt.
+LaTeX Warning: Reference `sec:methods' on page 3 undefined on input line 222.
+
 
 
 [3]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+<outputs/focus_map.png, id=190, 462.528pt x 260.172pt>
+File: outputs/focus_map.png Graphic file (type png)
+<use outputs/focus_map.png>
+Package pdftex.def Info: outputs/focus_map.png  used on input line 252.
+(pdftex.def)             Requested size: 120.95892pt x 68.03613pt.
+<outputs/fused_winner_takes_all.png, id=192, 642.4pt x 361.35pt>
+File: outputs/fused_winner_takes_all.png Graphic file (type png)
+<use outputs/fused_winner_takes_all.png>
+Package pdftex.def Info: outputs/fused_winner_takes_all.png  used on input line
+ 257.
+(pdftex.def)             Requested size: 120.95892pt x 68.03415pt.
+<outputs/fused_soft.png, id=193, 642.4pt x 361.35pt>
+File: outputs/fused_soft.png Graphic file (type png)
+<use outputs/fused_soft.png>
+Package pdftex.def Info: outputs/fused_soft.png  used on input line 262.
+(pdftex.def)             Requested size: 120.95892pt x 68.03415pt.
+<outputs/fused_pyramid.png, id=194, 642.4pt x 361.35pt>
+File: outputs/fused_pyramid.png Graphic file (type png)
+<use outputs/fused_pyramid.png>
+Package pdftex.def Info: outputs/fused_pyramid.png  used on input line 267.
+(pdftex.def)             Requested size: 120.95892pt x 68.03415pt.
 
 
+<outputs/flower_focus_map.png, id=198, 1040.688pt x 1387.584pt>
+File: outputs/flower_focus_map.png Graphic file (type png)
+<use outputs/flower_focus_map.png>
+Package pdftex.def Info: outputs/flower_focus_map.png  used on input line 373.
+(pdftex.def)             Requested size: 120.95892pt x 161.27321pt.
+<outputs/flower_fused_wta.png, id=199, 1445.4pt x 1927.2pt>
+File: outputs/flower_fused_wta.png Graphic file (type png)
+<use outputs/flower_fused_wta.png>
+Package pdftex.def Info: outputs/flower_fused_wta.png  used on input line 378.
+(pdftex.def)             Requested size: 120.95892pt x 161.26616pt.
+<outputs/flower_fused_soft.png, id=200, 1445.4pt x 1927.2pt>
+File: outputs/flower_fused_soft.png Graphic file (type png)
+<use outputs/flower_fused_soft.png>
+Package pdftex.def Info: outputs/flower_fused_soft.png  used on input line 383.
 
-<outputs/insect_focus_map.png, id=194, 997.326pt x 1387.584pt>
+(pdftex.def)             Requested size: 120.95892pt x 161.26616pt.
+<outputs/flower_fused_pyramid.png, id=201, 1445.4pt x 1927.2pt>
+File: outputs/flower_fused_pyramid.png Graphic file (type png)
+<use outputs/flower_fused_pyramid.png>
+Package pdftex.def Info: outputs/flower_fused_pyramid.png  used on input line 3
+88.
+(pdftex.def)             Requested size: 120.95892pt x 161.26616pt.
+<outputs/insect_focus_map.png, id=203, 997.326pt x 1387.584pt>
 File: outputs/insect_focus_map.png Graphic file (type png)
 <use outputs/insect_focus_map.png>
-Package pdftex.def Info: outputs/insect_focus_map.png  used on input line 383.
-(pdftex.def)             Requested size: 123.84283pt x 172.28307pt.
-<outputs/insect_fused_wta.png, id=195, 1385.175pt x 1927.2pt>
+Package pdftex.def Info: outputs/insect_focus_map.png  used on input line 404.
+(pdftex.def)             Requested size: 120.95892pt x 168.2814pt.
+<outputs/insect_fused_wta.png, id=204, 1385.175pt x 1927.2pt>
 File: outputs/insect_fused_wta.png Graphic file (type png)
 <use outputs/insect_fused_wta.png>
-Package pdftex.def Info: outputs/insect_fused_wta.png  used on input line 388.
-(pdftex.def)             Requested size: 123.84283pt x 172.29366pt.
-<outputs/insect_fused_soft.png, id=196, 1385.175pt x 1927.2pt>
+Package pdftex.def Info: outputs/insect_fused_wta.png  used on input line 409.
+(pdftex.def)             Requested size: 120.95892pt x 168.26494pt.
+<outputs/insect_fused_soft.png, id=205, 1385.175pt x 1927.2pt>
 File: outputs/insect_fused_soft.png Graphic file (type png)
 <use outputs/insect_fused_soft.png>
-Package pdftex.def Info: outputs/insect_fused_soft.png  used on input line 393.
+Package pdftex.def Info: outputs/insect_fused_soft.png  used on input line 414.
 
-(pdftex.def)             Requested size: 123.84283pt x 172.29366pt.
-<outputs/insect_fused_pyramid.png, id=197, 1385.175pt x 1927.2pt>
+(pdftex.def)             Requested size: 120.95892pt x 168.26494pt.
+<outputs/insect_fused_pyramid.png, id=206, 1385.175pt x 1927.2pt>
 File: outputs/insect_fused_pyramid.png Graphic file (type png)
 <use outputs/insect_fused_pyramid.png>
-Package pdftex.def Info: outputs/insect_fused_pyramid.png  used on input line 3
-98.
-(pdftex.def)             Requested size: 123.84283pt x 172.29366pt.
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
+Package pdftex.def Info: outputs/insect_fused_pyramid.png  used on input line 4
+19.
+(pdftex.def)             Requested size: 120.95892pt x 168.26494pt.
 
 
 [4 <./outputs/focus_map.png> <./outputs/fused_winner_takes_all.png (PNG copy)> 
 <./outputs/fused_soft.png (PNG copy)> <./outputs/fused_pyramid.png (PNG copy)>]
-<outputs/lytro_03_fused_wta.png, id=212, 521.95pt x 521.95pt>
+
+
+<outputs/lytro_03_fused_wta.png, id=227, 521.95pt x 521.95pt>
 File: outputs/lytro_03_fused_wta.png Graphic file (type png)
 <use outputs/lytro_03_fused_wta.png>
-Package pdftex.def Info: outputs/lytro_03_fused_wta.png  used on input line 453
+Package pdftex.def Info: outputs/lytro_03_fused_wta.png  used on input line 496
 .
-(pdftex.def)             Requested size: 165.12378pt x 165.12393pt.
-<outputs/lytro_11_fused_wta.png, id=213, 521.95pt x 521.95pt>
+(pdftex.def)             Requested size: 80.64185pt x 80.63858pt.
+<outputs/lytro_11_fused_wta.png, id=228, 521.95pt x 521.95pt>
 File: outputs/lytro_11_fused_wta.png Graphic file (type png)
 <use outputs/lytro_11_fused_wta.png>
-Package pdftex.def Info: outputs/lytro_11_fused_wta.png  used on input line 458
+Package pdftex.def Info: outputs/lytro_11_fused_wta.png  used on input line 501
 .
-(pdftex.def)             Requested size: 165.12378pt x 165.12393pt.
-<outputs/lytro_13_fused_wta.png, id=214, 521.95pt x 521.95pt>
+(pdftex.def)             Requested size: 80.64185pt x 80.63858pt.
+<outputs/lytro_13_fused_wta.png, id=229, 521.95pt x 521.95pt>
 File: outputs/lytro_13_fused_wta.png Graphic file (type png)
 <use outputs/lytro_13_fused_wta.png>
-Package pdftex.def Info: outputs/lytro_13_fused_wta.png  used on input line 463
+Package pdftex.def Info: outputs/lytro_13_fused_wta.png  used on input line 506
 .
-(pdftex.def)             Requested size: 165.12378pt x 165.12393pt.
+(pdftex.def)             Requested size: 80.64185pt x 80.63858pt.
 
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
+[5]
 File: outputs/focus_map.png Graphic file (type png)
 <use outputs/focus_map.png>
-Package pdftex.def Info: outputs/focus_map.png  used on input line 501.
+Package pdftex.def Info: outputs/focus_map.png  used on input line 545.
 (pdftex.def)             Requested size: 120.95892pt x 68.03613pt.
-<outputs/neural_focus_map.png, id=217, 462.528pt x 260.172pt>
+<outputs/neural_focus_map.png, id=237, 462.528pt x 260.172pt>
 File: outputs/neural_focus_map.png Graphic file (type png)
 <use outputs/neural_focus_map.png>
-Package pdftex.def Info: outputs/neural_focus_map.png  used on input line 506.
+Package pdftex.def Info: outputs/neural_focus_map.png  used on input line 550.
 (pdftex.def)             Requested size: 120.95892pt x 68.03613pt.
 
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
 
 
 
-[5 <./outputs/flower_focus_map.png> <./outputs/flower_fused_wta.png (PNG copy)>
+[6 <./outputs/flower_focus_map.png> <./outputs/flower_fused_wta.png (PNG copy)>
  <./outputs/flower_fused_soft.png (PNG copy)> <./outputs/flower_fused_pyramid.p
 ng (PNG copy)> <./outputs/insect_focus_map.png> <./outputs/insect_fused_wta.png
  (PNG copy)> <./outputs/insect_fused_soft.png (PNG copy)> <./outputs/insect_fus
-ed_pyramid.png (PNG copy)>]
+ed_pyramid.png (PNG copy)> <./outputs/lytro_03_fused_wta.png (PNG copy)> <./out
+puts/lytro_11_fused_wta.png (PNG copy)> <./outputs/lytro_13_fused_wta.png (PNG 
+copy)>]
 
 
-Underfull \hbox (badness 3568) in paragraph at lines 540--541
+Underfull \hbox (badness 3568) in paragraph at lines 587--588
 []\OT1/ptm/m/n/10 A two-stage ORB-homography + ECC align-ment
  []
 
 
 
-[6 <./outputs/lytro_03_fused_wta.png (PNG copy)> <./outputs/lytro_11_fused_wta.
-png (PNG copy)> <./outputs/lytro_13_fused_wta.png (PNG copy)> <./outputs/neural
-_focus_map.png>]
-Underfull \hbox (badness 5050) in paragraph at lines 586--588
+[7 <./outputs/neural_focus_map.png>]
+Underfull \hbox (badness 5050) in paragraph at lines 632--634
 []\OT1/ptm/m/n/8 Z. Zhang and R. S. Blum, ``A cat-e-go-riza-tion of multiscale-
 
  []
@@ -661,24 +658,28 @@ Before submitting the final camera ready copy, remember to:
 
 
 
-[7
+[8
 
 ] (./report.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
+
+
+LaTeX Warning: There were undefined references.
+
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: DFB70A38DAEAA53CD62873BCD36FB31C;3207.
+(rerunfilecheck)             Checksum: 9281FDEA1AB59FB9B52B22233A661E65;3726.
  ) 
 Here is how much of TeX's memory you used:
- 11553 strings out of 473190
- 182145 string characters out of 5715800
- 614831 words of memory out of 5000000
- 34574 multiletter control sequences out of 15000+600000
- 600748 words of font info for 113 fonts, out of 8000000 for 9000
+ 11566 strings out of 473190
+ 182297 string characters out of 5715800
+ 622854 words of memory out of 5000000
+ 34580 multiletter control sequences out of 15000+600000
+ 604065 words of font info for 118 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,10n,79p,1222b,547s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,11n,79p,1631b,580s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
 ></usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
 </usr/local/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></
@@ -697,10 +698,10 @@ exmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2025/texmf-dist/
 fonts/type1/urw/times/utmbi8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/typ
 e1/urw/times/utmr8a.pfb></usr/local/texlive/2025/texmf-dist/fonts/type1/urw/tim
 es/utmri8a.pfb>
-Output written on report.pdf (7 pages, 21361268 bytes).
+Output written on report.pdf (8 pages, 21679724 bytes).
 PDF statistics:
- 355 PDF objects out of 1000 (max. 8388607)
- 287 compressed objects within 3 object streams
- 85 named destinations out of 1000 (max. 500000)
- 257 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 375 PDF objects out of 1000 (max. 8388607)
+ 305 compressed objects within 4 object streams
+ 89 named destinations out of 1000 (max. 500000)
+ 281 words of extra memory for PDF output out of 10000 (max. 10000000)
 
